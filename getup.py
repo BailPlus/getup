@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 #Copyright Bail 2024
-#getup 早起打卡 v0.1_0
+#getup 早起打卡
 #2024.8.5
 
-VERSION = 'v1.0'
-VERCODE = 1
+VERSION = 'v1.0.1'
+VERCODE = 2
 
 import sys,os,time,argparse,random,json
 
@@ -146,7 +146,6 @@ def history():
 def main():
     init()
     arg = getarg()
-    print(arg)
     if arg.set_clock:
         clock_time = arg.set_clock
         setclock(clock_time)
