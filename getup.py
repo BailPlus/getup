@@ -1,14 +1,15 @@
 #!/usr/bin/python3
 #Copyright Bail 2024
 #getup 早起打卡
-#2024.8.5
+#2024.8.5-2024.8.8
 
-VERSION = 'v1.0.1'
-VERCODE = 2
+VERSION = 'v1.0.1.1'
+VERCODE = 3
 
 import sys,os,time,argparse,random,json
 
 def init():
+    '''初始化程序'''
     if not os.path.exists(getpath('datadir')):
         os.makedirs(getpath('datadir'))
     if not os.path.exists(getpath('history')):
@@ -17,6 +18,7 @@ def init():
     for i in getpath('all'):
         open(i,'a').close()
 def getarg():
+    '''获取命令行参数'''
     parser = argparse.ArgumentParser()
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-s','--set-clock',
@@ -30,6 +32,9 @@ def getarg():
     arg = parser.parse_args()
     return arg
 def getpath(name:str)->str|tuple[str]:
+    '''获取路径
+name(str):要访问的路径名称
+返回值:路径或包含路径的元组'''
     datadir = os.path.expanduser('~/.config/getup/')
     match name: # 该语法需要Python3.10及以上的版本
         case 'all':
@@ -60,7 +65,7 @@ def memnumber()->bool:
     '''唤醒神器：即时记忆
 返回值:是否通过测试(bool)'''
     print('下面将会出示10个数字，请在出示完成之后填写这10个数字，以保证你完全清醒。')
-    nums = ''.join((str(random.randint(0,9)) for i in range(10)))
+    nums = ''.join((str(random.randint(0,9)) for _ in range(10)))
     for i in nums:
         print(i,end='\r')
         time.sleep(1)
@@ -81,11 +86,16 @@ clock(tuple[int]):预设的时钟(时,分)
         return True
     else:
         return False
-def readfile()->list:
+def readfile()->list[int]:
+    '''读取历史数据
+返回值: 历史数据(list[int])'''
     with open(getpath('history')) as file:
         data:list[int] = json.load(file)
     return data
-def calculate_daka_days(data:list)->int:
+def calculate_daka_days(data:list[int])->int:
+    '''计算已连续打卡的天数
+data(list[int]):历史数据，其中的整数为“日期戳”
+返回值:连同当天连续打卡的天数(int)'''
     count = 0
     for i in range(len(data)):
         if (i!=0) and (data[i-1]+1!=data[i]):
@@ -97,7 +107,9 @@ def da3ka3(days:int):
     '''打卡界面
 days(int):已连续打卡的天数'''
     print(f'恭喜！你已连续早起打卡{days}天！')
-def save(data:list):
+def save(data:list[int]):
+    '''保存打卡数据
+data(list[int]):历史数据，不包括当天，存放日期戳'''
     data.append(daystamp())
     with open(getpath('history'),'w') as file:
         json.dump(data,file)
