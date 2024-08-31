@@ -3,8 +3,8 @@
 #getup 早起打卡
 #2024.8.5-2024.8.31
 
-VERSION = 'v1.0.2'
-VERCODE = 4
+VERSION = 'v1.1'
+VERCODE = 5
 
 import sys,os,time,argparse,random,json
 
@@ -93,30 +93,26 @@ def readfile()->list[int]:
         data:list[int] = json.load(file)
     return data
 def calculate_daka_days(data:list[int])->int:
-    '''计算已连续打卡的天数
+    '''计算已连续打卡的天数并保存数据
 data(list[int]):历史数据，其中的整数为“日期戳”
 返回值:连同当天连续打卡的天数(int)'''
-    count = 0
-    for i in range(len(data)):
-        if (i!=0) and (data[i-1]+1!=data[i]):
-            count = 1
-        else:
-            count += 1
-    return count+1  # 连同当天
+    # 保存打卡数据
+    data.append(daystamp())
+    with open(getpath('history'),'w') as file:
+        json.dump(data,file)
+    # 计算打卡天数
+    for i in range(len(data)-1,-1,-1):  # 逆序读取
+        if (i == 0) or (data[i-1] != data[i]-1):
+            break
+    return len(data)-i# 连同当天
 def da3ka3(days:int):
     '''打卡界面
 days(int):已连续打卡的天数'''
     print(f'恭喜！你已连续早起打卡{days}天！')
-def save(data:list[int]):
-    '''保存打卡数据
-data(list[int]):历史数据，不包括当天，存放日期戳'''
-    data.append(daystamp())
-    with open(getpath('history'),'w') as file:
-        json.dump(data,file)
 def getup():
     '''早起打卡'''
     welcome()
-    print(time.strftime('现在时间是%Y.%m.%d %H:%M:%S')
+    print(time.strftime('现在时间是%Y.%m.%d %H:%M:%S'))
     if not memnumber(): # 未通过测试
         sys.exit(0)
     clock = getclock()
@@ -124,7 +120,6 @@ def getup():
         data = readfile()
         days = calculate_daka_days(data)
         da3ka3(days)
-        save(data)
     else:
         print('抱歉，你的打卡已超出有效时间。明天再来吧！')
         sys.exit(0)
