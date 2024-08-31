@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 #Copyright Bail 2024
 #getup 早起打卡
-#2024.8.5-2024.8.8
+#2024.8.5-2024.8.31
 
-VERSION = 'v1.0.1.1'
-VERCODE = 3
+VERSION = 'v1.0.2'
+VERCODE = 4
 
 import sys,os,time,argparse,random,json
 
@@ -116,6 +116,7 @@ data(list[int]):历史数据，不包括当天，存放日期戳'''
 def getup():
     '''早起打卡'''
     welcome()
+    print(time.strftime('现在时间是%Y.%m.%d %H:%M:%S')
     if not memnumber(): # 未通过测试
         sys.exit(0)
     clock = getclock()
